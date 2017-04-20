@@ -20,7 +20,7 @@ RUNC_BUILDTAGS="${RUNC_BUILDTAGS:-"seccomp apparmor selinux"}"
 
 install_runc() {
 	echo "Install runc version $RUNC_COMMIT"
-	git clone https://github.com/docker/runc.git "$GOPATH/src/github.com/opencontainers/runc"
+	git clone https://github.com/vrgakos/runc.git "$GOPATH/src/github.com/opencontainers/runc"
 	cd "$GOPATH/src/github.com/opencontainers/runc"
 	git checkout -q "$RUNC_COMMIT"
 	make BUILDTAGS="$RUNC_BUILDTAGS" $1
@@ -29,7 +29,7 @@ install_runc() {
 
 install_containerd() {
 	echo "Install containerd version $CONTAINERD_COMMIT"
-	git clone https://github.com/docker/containerd.git "$GOPATH/src/github.com/docker/containerd"
+	git clone https://github.com/vrgakos/containerd.git "$GOPATH/src/github.com/docker/containerd"
 	cd "$GOPATH/src/github.com/docker/containerd"
 	git checkout -q "$CONTAINERD_COMMIT"
 	make $1

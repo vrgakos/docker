@@ -11,7 +11,7 @@ type apiClientExperimental interface {
 
 // CheckpointAPIClient defines API client methods for the checkpoints
 type CheckpointAPIClient interface {
-	CheckpointCreate(ctx context.Context, container string, options types.CheckpointCreateOptions) error
+	CheckpointCreate(ctx context.Context, container string, options types.CheckpointCreateOptions) (types.CheckpointStat, error)
 	CheckpointDelete(ctx context.Context, container string, options types.CheckpointDeleteOptions) error
 	CheckpointList(ctx context.Context, container string, options types.CheckpointListOptions) ([]types.Checkpoint, error)
 }

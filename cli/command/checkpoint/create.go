@@ -16,6 +16,9 @@ type createOptions struct {
 	checkpoint    string
 	checkpointDir string
 	leaveRunning  bool
+	parentPath    string
+	preDump	      bool
+	pageServer    string
 }
 
 func newCreateCommand(dockerCli *command.DockerCli) *cobra.Command {
@@ -35,6 +38,9 @@ func newCreateCommand(dockerCli *command.DockerCli) *cobra.Command {
 	flags := cmd.Flags()
 	flags.BoolVar(&opts.leaveRunning, "leave-running", false, "Leave the container running after checkpoint")
 	flags.StringVarP(&opts.checkpointDir, "checkpoint-dir", "", "", "Use a custom checkpoint storage directory")
+	flags.StringVarP(&opts.parentPath, "parent-path", "", "", "relative path for previous checkpoint-dir in pre-dump")
+	flags.BoolVar(&opts.preDump, "pre-dump", false, "dump container's memory information only, leave the container running after this")
+	flags.StringVarP(&opts.pageServer, "page-server", "", "", "ADDRESS:PORT of the page server")
 
 	return cmd
 }
@@ -46,9 +52,12 @@ func runCreate(dockerCli *command.DockerCli, opts createOptions) error {
 		CheckpointID:  opts.checkpoint,
 		CheckpointDir: opts.checkpointDir,
 		Exit:          !opts.leaveRunning,
+		ParentPath:    opts.parentPath,
+		PreDump:       opts.preDump,
+		PageServer:    opts.pageServer,
 	}
 
-	err := client.CheckpointCreate(context.Background(), opts.container, checkpointOpts)
+	_, err := client.CheckpointCreate(context.Background(), opts.container, checkpointOpts)
 	if err != nil {
 		return err
 	}

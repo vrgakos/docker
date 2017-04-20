@@ -3,6 +3,7 @@ syntax = "proto3";
 package types;
 
 import "google/protobuf/timestamp.proto";
+import "stats.proto";
 
 service API {
 	rpc GetServerVersion(GetServerVersionRequest) returns (GetServerVersionResponse) {}
@@ -105,9 +106,15 @@ message CreateCheckpointRequest {
 	string id = 1; // ID of container
 	Checkpoint checkpoint = 2; // Checkpoint configuration
 	string checkpointDir = 3; // Directory where checkpoints are stored
+
+	string parentPath = 4;
+	bool preDump = 5;
+	string pageServer = 6;
 }
 
 message CreateCheckpointResponse {
+	bool preDump = 1;
+	dump_stats_entry stats = 2;
 }
 
 message DeleteCheckpointRequest {

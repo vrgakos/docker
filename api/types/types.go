@@ -466,6 +466,21 @@ type Checkpoint struct {
 	Name string // Name is the name of the checkpoint
 }
 
+// CheckpointStat represents the details of a checkpoint
+type CheckpointStat struct {
+	Name               string // Name is the name of the checkpoint
+	PreDump            bool
+
+	FreezingTime       uint32 // From Criu stats
+	FrozenTime         uint32
+	MemdumpTime        uint32
+	MemwriteTime       uint32
+	PagesScanned       uint64
+	PagesSkippedParent uint64
+	PagesWritten       uint64
+	IrmapResolve       uint32
+}
+
 // Runtime describes an OCI runtime
 type Runtime struct {
 	Path string   `json:"path"`

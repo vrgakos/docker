@@ -6,6 +6,7 @@ import (
 	containerd "github.com/docker/containerd/api/grpc/types"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"golang.org/x/net/context"
+	"github.com/docker/docker/api/types"
 )
 
 // State constants used in state change reporting.
@@ -47,7 +48,7 @@ type Client interface {
 	GetPidsForContainer(containerID string) ([]int, error)
 	Summary(containerID string) ([]Summary, error)
 	UpdateResources(containerID string, resources Resources) error
-	CreateCheckpoint(containerID string, checkpointID string, checkpointDir string, exit bool) error
+	CreateCheckpoint(containerID string, config types.CheckpointCreateOptions) (types.CheckpointStat, error)
 	DeleteCheckpoint(containerID string, checkpointID string, checkpointDir string) error
 	ListCheckpoints(containerID string, checkpointDir string) (*Checkpoints, error)
 }

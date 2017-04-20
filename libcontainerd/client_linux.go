@@ -16,6 +16,7 @@ import (
 	"github.com/golang/protobuf/ptypes/timestamp"
 	specs "github.com/opencontainers/runtime-spec/specs-go"
 	"golang.org/x/net/context"
+	"github.com/docker/docker/api/types"
 )
 
 type client struct {
@@ -560,26 +561,46 @@ func (clnt *client) Restore(containerID string, attachStdio StdioCallback, optio
 	return clnt.setExited(containerID, uint32(255))
 }
 
-func (clnt *client) CreateCheckpoint(containerID string, checkpointID string, checkpointDir string, exit bool) error {
+func (clnt *client) CreateCheckpoint(containerID string, config types.CheckpointCreateOptions) (types.CheckpointStat, error) {
 	clnt.lock(containerID)
 	defer clnt.unlock(containerID)
+
+	var stat types.CheckpointStat
+
 	if _, err := clnt.getContainer(containerID); err != nil {
-		return err
+		return stat, err
 	}
 
-	_, err := clnt.remote.apiClient.CreateCheckpoint(context.Background(), &containerd.CreateCheckpointRequest{
+	response, err := clnt.remote.apiClient.CreateCheckpoint(context.Background(), &containerd.CreateCheckpointRequest{
 		Id: containerID,
 		Checkpoint: &containerd.Checkpoint{
-			Name:        checkpointID,
-			Exit:        exit,
+			Name:        config.CheckpointID,
+			Exit:        config.Exit,
 			Tcp:         true,
 			UnixSockets: true,
 			Shell:       false,
 			EmptyNS:     []string{"network"},
 		},
-		CheckpointDir: checkpointDir,
+		CheckpointDir: config.CheckpointDir,
+		ParentPath: config.ParentPath,
+		PreDump: config.PreDump,
+		PageServer: config.PageServer,
 	})
-	return err
+
+	stat.Name = config.CheckpointID
+	stat.PreDump = response.PreDump
+
+	// Copy checkpoint stat values from criu response
+	stat.FreezingTime       = *response.Stats.FreezingTime
+	stat.FrozenTime         = *response.Stats.FrozenTime
+	stat.MemdumpTime        = *response.Stats.MemdumpTime
+	stat.MemwriteTime       = *response.Stats.MemwriteTime
+	stat.PagesScanned       = *response.Stats.PagesScanned
+	stat.PagesSkippedParent = *response.Stats.PagesSkippedParent
+	stat.PagesWritten       = *response.Stats.PagesWritten
+	stat.IrmapResolve       = *response.Stats.IrmapResolve
+
+	return stat, err
 }
 
 func (clnt *client) DeleteCheckpoint(containerID string, checkpointID string, checkpointDir string) error {

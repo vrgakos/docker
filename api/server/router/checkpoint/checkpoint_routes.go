@@ -21,13 +21,12 @@ func (s *checkpointRouter) postContainerCheckpoint(ctx context.Context, w http.R
 		return err
 	}
 
-	err := s.backend.CheckpointCreate(vars["name"], options)
+	stat, err := s.backend.CheckpointCreate(vars["name"], options)
 	if err != nil {
 		return err
 	}
 
-	w.WriteHeader(http.StatusCreated)
-	return nil
+	return httputils.WriteJSON(w, http.StatusCreated, stat)
 }
 
 func (s *checkpointRouter) getContainerCheckpoints(ctx context.Context, w http.ResponseWriter, r *http.Request, vars map[string]string) error {

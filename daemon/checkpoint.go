@@ -17,35 +17,34 @@ var (
 )
 
 // CheckpointCreate checkpoints the process running in a container with CRIU
-func (daemon *Daemon) CheckpointCreate(name string, config types.CheckpointCreateOptions) error {
+func (daemon *Daemon) CheckpointCreate(name string, config types.CheckpointCreateOptions) (types.CheckpointStat, error) {
+	var stat types.CheckpointStat
+
 	container, err := daemon.GetContainer(name)
 	if err != nil {
-		return err
+		return stat, err
 	}
 
 	if !container.IsRunning() {
-		return fmt.Errorf("Container %s not running", name)
+		return stat, fmt.Errorf("Container %s not running", name)
 	}
 
-	var checkpointDir string
-	if config.CheckpointDir != "" {
-		checkpointDir = config.CheckpointDir
-	} else {
-		checkpointDir = container.CheckpointDir()
+	if config.CheckpointDir == "" {
+		config.CheckpointDir = container.CheckpointDir()
 	}
 
 	if !validCheckpointNamePattern.MatchString(config.CheckpointID) {
-		return fmt.Errorf("Invalid checkpoint ID (%s), only %s are allowed", config.CheckpointID, validCheckpointNameChars)
+		return stat, fmt.Errorf("Invalid checkpoint ID (%s), only %s are allowed", config.CheckpointID, validCheckpointNameChars)
 	}
 
-	err = daemon.containerd.CreateCheckpoint(container.ID, config.CheckpointID, checkpointDir, config.Exit)
+	stat, err = daemon.containerd.CreateCheckpoint(container.ID, config)
 	if err != nil {
-		return fmt.Errorf("Cannot checkpoint container %s: %s", name, err)
+		return stat, fmt.Errorf("Cannot checkpoint container %s: %s", name, err)
 	}
 
 	daemon.LogContainerEvent(container, "checkpoint")
 
-	return nil
+	return stat, nil
 }
 
 // CheckpointDelete deletes the specified checkpoint

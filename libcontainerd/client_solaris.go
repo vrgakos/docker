@@ -88,8 +88,8 @@ func (clnt *client) UpdateResources(containerID string, resources Resources) err
 	return nil
 }
 
-func (clnt *client) CreateCheckpoint(containerID string, checkpointID string, checkpointDir string, exit bool) error {
-	return nil
+func (clnt *client) CreateCheckpoint(containerID string, config types.CheckpointCreateOptions) (types.CheckpointStat, error) {
+	return nil, nil
 }
 
 func (clnt *client) DeleteCheckpoint(containerID string, checkpointID string, checkpointDir string) error {

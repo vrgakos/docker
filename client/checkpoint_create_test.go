@@ -17,7 +17,7 @@ func TestCheckpointCreateError(t *testing.T) {
 	client := &Client{
 		client: newMockClient(errorMock(http.StatusInternalServerError, "Server error")),
 	}
-	err := client.CheckpointCreate(context.Background(), "nothing", types.CheckpointCreateOptions{
+	_, err := client.CheckpointCreate(context.Background(), "nothing", types.CheckpointCreateOptions{
 		CheckpointID: "noting",
 		Exit:         true,
 	})
@@ -62,7 +62,7 @@ func TestCheckpointCreate(t *testing.T) {
 		}),
 	}
 
-	err := client.CheckpointCreate(context.Background(), expectedContainerID, types.CheckpointCreateOptions{
+	_, err := client.CheckpointCreate(context.Background(), expectedContainerID, types.CheckpointCreateOptions{
 		CheckpointID: expectedCheckpointID,
 		Exit:         true,
 	})

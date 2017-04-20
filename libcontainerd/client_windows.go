@@ -628,8 +628,8 @@ func (clnt *client) UpdateResources(containerID string, resources Resources) err
 	return nil
 }
 
-func (clnt *client) CreateCheckpoint(containerID string, checkpointID string, checkpointDir string, exit bool) error {
-	return errors.New("Windows: Containers do not support checkpoints")
+func (clnt *client) CreateCheckpoint(containerID string, config types.CheckpointCreateOptions) (types.CheckpointStat, error) {
+	return nil, errors.New("Windows: Containers do not support checkpoints")
 }
 
 func (clnt *client) DeleteCheckpoint(containerID string, checkpointID string, checkpointDir string) error {

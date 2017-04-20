@@ -15,6 +15,9 @@ type CheckpointCreateOptions struct {
 	CheckpointID  string
 	CheckpointDir string
 	Exit          bool
+	ParentPath    string
+	PreDump	      bool
+	PageServer    string
 }
 
 // CheckpointListOptions holds parameters to list checkpoints for a container
